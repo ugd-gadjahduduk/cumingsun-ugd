@@ -24,8 +24,13 @@ export default function Document() {
         ></script>
         
         {/* Favicon and icons */}
-        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="alternate icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        
+        {/* Page title */}
+        <title>UGD - Coming Soon</title>
+        <meta name="description" content="UGD - Something exciting is coming soon" />
         
         {/* Fonts */}
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
