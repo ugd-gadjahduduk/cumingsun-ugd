@@ -146,6 +146,7 @@ storybook-static
 tmp/
 temp/
 .tmp/
+.context/
 
 # Editor directories and files
 .vscode/*
