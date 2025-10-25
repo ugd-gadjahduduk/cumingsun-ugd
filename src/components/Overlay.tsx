@@ -28,21 +28,40 @@ export function Overlay() {
     return () => clearInterval(timer)
   }, [])
 
-  // Fetch location data
+  // Fetch location data with localStorage
   useEffect(() => {
     const fetchLocation = async () => {
       try {
         const response = await fetch('https://ipapi.co/json/')
         const data: LocationData = await response.json()
         
-        if (data.city && data.country_name) {
-          setLocationText(`Last visit from ${data.city}, ${data.country_name}`)
+        // Get last visit from localStorage
+        const lastVisitData = localStorage.getItem('lastVisit')
+        
+        if (lastVisitData) {
+          // Show previous visit location
+          const lastVisit = JSON.parse(lastVisitData)
+          setLocationText(`Last visit from ${lastVisit.city}, ${lastVisit.country}`)
         } else {
-          setLocationText('Last visit from Unknown location')
+          // First time visiting - show current location as "last visit" (gimmick)
+          if (data.city && data.country_name) {
+            setLocationText(`Last visit from ${data.city}, ${data.country_name}`)
+          } else {
+            setLocationText('Last visit from Unknown location')
+          }
+        }
+        
+        // Save current visit for next time
+        if (data.city && data.country_name) {
+          localStorage.setItem('lastVisit', JSON.stringify({
+            city: data.city,
+            country: data.country_name,
+            timestamp: new Date().toISOString()
+          }))
         }
       } catch (error) {
         console.error('Failed to fetch location:', error)
-        setLocationText('Last visit from Unknown location')
+        setLocationText('Location unavailable')
       }
     }
 

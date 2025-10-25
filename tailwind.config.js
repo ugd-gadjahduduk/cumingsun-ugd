@@ -8,7 +8,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'inter': ['Inter var', 'sans-serif'],
+        manrope: ['Manrope', 'sans-serif'],
+        inter: ['Inter var', 'sans-serif'],
       },
       colors: {
         background: '#f2f2f5',

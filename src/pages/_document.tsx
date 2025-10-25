@@ -29,6 +29,10 @@ export default function Document() {
         
         {/* Fonts */}
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+        {/* Manrope Font */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
       <body className="overflow-hidden bg-background font-inter text-black antialiased">
         <Main />

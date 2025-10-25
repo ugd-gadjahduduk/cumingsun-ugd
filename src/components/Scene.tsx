@@ -9,7 +9,7 @@ import {
   Center,
   Text3D,
   Instances,
-  Instance
+  Instance,
 } from '@react-three/drei'
 import { MeshTransmissionMaterial } from '@react-three/drei'
 import { RGBELoader } from 'three-stdlib'
@@ -32,19 +32,23 @@ const materialConfig: MaterialConfig = {
   distortionScale: 0.1,
   temporalDistortion: 0,
   ior: 1.25,
-  color: 'white'
+  color: 'white',
 }
 
 // Smooth zoom component
 function SmoothZoom({
   controlsRef,
   targetZoom,
-  currentZoom
+  currentZoom,
+  cameraPositionRef,
 }: {
   controlsRef: React.RefObject<any>
   targetZoom: React.MutableRefObject<number>
   currentZoom: React.MutableRefObject<number>
+  cameraPositionRef: React.MutableRefObject<{ x: number; y: number; z: number }>
 }) {
+  const prevPosition = useRef({ x: 1, y: 20, z: 50 })
+
   useFrame(() => {
     if (!controlsRef.current) return
 
@@ -55,7 +59,23 @@ function SmoothZoom({
     // Update camera zoom
     if (controlsRef.current.object) {
       controlsRef.current.object.zoom = currentZoom.current
+
+      // Only update position if it changed (animasi GSAP aktif)
+      if (
+        prevPosition.current.x !== cameraPositionRef.current.x ||
+        prevPosition.current.y !== cameraPositionRef.current.y ||
+        prevPosition.current.z !== cameraPositionRef.current.z
+      ) {
+        controlsRef.current.object.position.set(
+          cameraPositionRef.current.x,
+          cameraPositionRef.current.y,
+          cameraPositionRef.current.z
+        )
+        prevPosition.current = { ...cameraPositionRef.current }
+      }
+
       controlsRef.current.object.updateProjectionMatrix()
+      controlsRef.current.update()
     }
   })
 
@@ -66,7 +86,7 @@ function SmoothZoom({
 const Grid = ({
   number = 15,
   lineWidth = 0.026,
-  height = 0.5
+  height = 0.5,
 }: {
   number?: number
   lineWidth?: number
@@ -79,11 +99,7 @@ const Grid = ({
       Array.from({ length: number }, (_, x) => (
         <group
           key={`${x}:${y}`}
-          position={[
-            x * 2 - Math.floor(number / 2) * 2,
-            -0.01,
-            y * 2 - Math.floor(number / 2) * 2
-          ]}
+          position={[x * 2 - Math.floor(number / 2) * 2, -0.01, y * 2 - Math.floor(number / 2) * 2]}
         >
           <Instance rotation={[-Math.PI / 2, 0, 0]} />
           <Instance rotation={[-Math.PI / 2, 0, Math.PI / 2]} />
@@ -135,16 +151,41 @@ function Text({
   )
 }
 
-export function Scene() {
+export function Scene({ isLoaderVisible = true }: { isLoaderVisible?: boolean }) {
   const [deviceState, setDeviceState] = useState<DeviceState>({
     isMobile: false,
     isTablet: false,
-    isDesktop: true
+    isDesktop: true,
   })
 
   const controlsRef = useRef<any>()
   const targetZoom = useRef(40)
   const currentZoom = useRef(40)
+  const cameraPositionRef = useRef({ x: 1, y: 20, z: 50 })
+
+  // Animate camera when loader finishes
+  useEffect(() => {
+    if (!isLoaderVisible && controlsRef.current) {
+      // Import gsap dynamically
+      import('gsap').then(gsap => {
+        gsap.default.to(cameraPositionRef.current, {
+          x: 10,
+          y: 20,
+          z: 20,
+          duration: 1.5,
+          delay: 0.4,
+          ease: 'power2.inOut',
+          onUpdate: () => {
+            // Force OrbitControls to update target
+            if (controlsRef.current) {
+              controlsRef.current.target.set(0, 0, 0)
+              controlsRef.current.update()
+            }
+          },
+        })
+      })
+    }
+  }, [isLoaderVisible])
 
   // Device detection
   useEffect(() => {
@@ -237,7 +278,7 @@ export function Scene() {
     <Canvas
       shadows
       orthographic
-      camera={{ position: [10, 20, 20], zoom: initialZoom }}
+      camera={{ position: [1, 20, 50], zoom: initialZoom }}
       gl={{ preserveDrawingBuffer: true }}
       className="w-full h-full"
     >
@@ -245,15 +286,12 @@ export function Scene() {
         controlsRef={controlsRef}
         targetZoom={targetZoom}
         currentZoom={currentZoom}
+        cameraPositionRef={cameraPositionRef}
       />
 
       <color attach="background" args={['#f2f2f5']} />
 
-      <Text
-        config={materialConfig}
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -1, 2.25]}
-      >
+      <Text config={materialConfig} rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 2.25]}>
         {text}
       </Text>
 
@@ -322,11 +360,7 @@ export function Scene() {
         </group>
       </Environment>
 
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        position={[0, -1.05, 0]}
-        receiveShadow
-      >
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.05, 0]} receiveShadow>
         <planeGeometry args={[40, 40]} />
         <shadowMaterial transparent opacity={0.35} color={contactShadowColor} />
       </mesh>
