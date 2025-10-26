@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 import type { LocationData } from '@/types'
+import { MagneticElement } from './MagneticElement'
+import GadjahDudukLogo from './GadjahDudukLogo'
 
 export function Overlay() {
   const [currentTime, setCurrentTime] = useState<string>('')
@@ -14,7 +15,7 @@ export function Overlay() {
       setCurrentTime(
         new Date().toLocaleTimeString('en-GB', {
           hour: '2-digit',
-          minute: '2-digit'
+          minute: '2-digit',
         })
       )
     }
@@ -34,10 +35,10 @@ export function Overlay() {
       try {
         const response = await fetch('https://ipapi.co/json/')
         const data: LocationData = await response.json()
-        
+
         // Get last visit from localStorage
         const lastVisitData = localStorage.getItem('lastVisit')
-        
+
         if (lastVisitData) {
           // Show previous visit location
           const lastVisit = JSON.parse(lastVisitData)
@@ -50,14 +51,17 @@ export function Overlay() {
             setLocationText('Last visit from Unknown location')
           }
         }
-        
+
         // Save current visit for next time
         if (data.city && data.country_name) {
-          localStorage.setItem('lastVisit', JSON.stringify({
-            city: data.city,
-            country: data.country_name,
-            timestamp: new Date().toISOString()
-          }))
+          localStorage.setItem(
+            'lastVisit',
+            JSON.stringify({
+              city: data.city,
+              country: data.country_name,
+              timestamp: new Date().toISOString(),
+            })
+          )
         }
       } catch (error) {
         console.error('Failed to fetch location:', error)
@@ -70,32 +74,44 @@ export function Overlay() {
 
   return (
     <div className="absolute inset-0 pointer-events-none w-full h-full flex flex-col justify-between">
-      {/* Current time - bottom left */}
-      <div className="absolute bottom-10 left-10 text-base">
+      {/* Time - bottom left */}
+      <div className="absolute bottom-10 left-10 text-base mix-blend-difference text-white">
         {currentTime}
       </div>
-      
-      {/* Logo - top left */}
-      <div className="absolute top-6 left-6">
-        <Image
-          src="/GadjahDuduk.svg"
-          alt="UGD Logo"
-          width={50}
-          height={50}
-          className="w-12 h-12 md:w-[50px] md:h-[50px]"
-          priority
+
+      {/* Logo - top left with magnetic effect */}
+      <MagneticElement
+        className="absolute top-6 left-6 pointer-events-auto cursor-default z-50 select-none mix-blend-difference"
+        strength={0.4}
+        radius={120}
+        duration={0.4}
+        ease="power3.out"
+        resetEase="elastic.out(1, 0.4)"
+        resetDuration={0.6}
+      >
+        <GadjahDudukLogo
+          className="w-12 h-12 md:w-[50px] md:h-[50px] text-white"
+          aria-hidden
         />
-      </div>
-      
+      </MagneticElement>
+
       {/* Location - bottom right */}
-      <div className="absolute bottom-10 right-10 text-base text-right">
+      <div className="absolute bottom-10 right-10 text-base text-right mix-blend-difference text-white">
         {locationText}
       </div>
-      
+
       {/* UGD text - top right */}
-      <div className="absolute top-10 right-10 text-base font-medium">
-        UGD
-      </div>
+      <MagneticElement
+        className="absolute top-10 right-10 pointer-events-auto cursor-default z-50 select-none mix-blend-difference"
+        strength={0.3}
+        radius={100}
+        duration={0.4}
+        ease="power3.out"
+        resetEase="elastic.out(1, 0.4)"
+        resetDuration={0.6}
+      >
+        <div className="text-base font-medium text-white">UGD</div>
+      </MagneticElement>
     </div>
   )
 }

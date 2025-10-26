@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
+import Head from 'next/head'
 import { Scene } from '@/components/Scene'
 import { Overlay } from '@/components/Overlay'
 import { Loader } from '@/components/Loader'
@@ -16,19 +17,25 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="relative w-full h-full">
-      {mounted && (
-        <Loader
-          heading="UGD"
-          visible={visible}
-          onFinished={() => setMounted(false)}
-        />
-      )}
+    <>
+      <Head>
+        <title>UGD - Coming Soon✨</title>
+      </Head>
+      
+      <div className="relative w-full h-full">
+        {mounted && (
+          <Loader
+            heading="UGD"
+            visible={visible}
+            onFinished={() => setMounted(false)}
+          />
+        )}
 
-      <Suspense fallback={null}>
-        <Scene isLoaderVisible={visible} />
-        <Overlay />
-      </Suspense>
-    </div>
+        <Suspense fallback={null}>
+          <Scene isLoaderVisible={visible} />
+          <Overlay />
+        </Suspense>
+      </div>
+    </>
   )
 }

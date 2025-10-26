@@ -7,7 +7,7 @@ export default function Document() {
         <meta name="theme-color" content="#f2f2f5" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="light-content" />
-        <meta name="apple-mobile-web-app-title" content="UGD - Coming Soon" />
+        <meta name="apple-mobile-web-app-title" content="UGD - Coming Soon ✨" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="format-detection" content="telephone=no" />
         
@@ -28,10 +28,9 @@ export default function Document() {
         <link rel="alternate icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         
-        {/* Page title */}
-        <title>UGD - Coming Soon</title>
-        <meta name="description" content="UGD - Something exciting is coming soon" />
-        
+        {/* Meta tags */}
+        <meta name="description" content="UGD - Something exciting is coming soon ✨" />
+
         {/* Fonts */}
         <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
         {/* Manrope Font */}

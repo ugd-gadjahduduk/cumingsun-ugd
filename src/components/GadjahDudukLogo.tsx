@@ -1,9 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 461 512"
-    preserveAspectRatio="xMidYMid meet">
-    <g transform="translate(0,512) scale(0.1,-0.1)" fill="currentColor" stroke="none">
+// ./GadjahDudukLogo.tsx
+import * as React from 'react'
+
+type Props = React.SVGProps<SVGSVGElement>
+
+export default function GadjahDudukLogo({ className = '', ...props }: Props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 461 512"
+      preserveAspectRatio="xMidYMid meet"
+      className={className}
+      aria-hidden="true"
+      {...props}
+    >
+      <g transform="translate(0,512) scale(0.1,-0.1)" fill="currentColor" stroke="none">
         <path
-            d="M2255 4843 c-67 -8 -146 -38 -260 -97 -161 -84 -507 -293 -882 -532
+          d="M2255 4843 c-67 -8 -146 -38 -260 -97 -161 -84 -507 -293 -882 -532
 -169 -109 -375 -240 -458 -292 -82 -52 -174 -118 -204 -146 -70 -67 -126 -154
 -152 -235 -20 -64 -21 -93 -26 -816 -2 -412 0 -858 4 -990 9 -230 10 -242 35
 -290 15 -27 46 -69 70 -92 38 -37 715 -494 1118 -756 408 -264 553 -319 845
@@ -28,9 +40,13 @@
 -371 62 -545 -63 -115 -133 -161 -833 -546 -140 -77 -292 -162 -338 -190 -126
 -77 -284 -104 -479 -83 -191 22 -280 57 -518 204 -162 101 -1201 792 -1233
 821 -13 12 -34 39 -45 61 l-22 40 0 965 0 965 32 66 c41 82 97 147 165 190 29
-18 179 114 333 213 530 340 760 482 1008 623 252 143 308 160 432 128z" />
+18 179 114 333 213 530 340 760 482 1008 623 252 143 308 160 432 128z"
+        />
         <path
-            d="M1425 3500 c-53 -12 -94 -40 -123 -82 -22 -34 -27 -53 -27 -103 0
--78 33 -132 97 -164 177 -85 352 106 244 269 -40 60 -124 96 -191 80z" />
-    </g>
-</svg>
+          d="M1425 3500 c-53 -12 -94 -40 -123 -82 -22 -34 -27 -53 -27 -103 0
+-78 33 -132 97 -164 177 -85 352 106 244 269 -40 60 -124 96 -191 80z"
+        />
+      </g>
+    </svg>
+  )
+}
