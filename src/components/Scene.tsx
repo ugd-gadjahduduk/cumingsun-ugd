@@ -1,12 +1,13 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Environment, Lightformer } from '@react-three/drei'
 import type { MaterialConfig } from '@/types'
 import { GyroscopeControls } from './three/GyroscopeControls'
 import { SmoothZoom } from './three/SmoothZoom'
 import { Text3DGlass } from './three/Text3DGlass'
+import { GyroPermissionButton } from './GyroPermissionButton'
 import { useDeviceDetection } from '@/hooks/useDeviceDetection'
 import { useZoomControl } from '@/hooks/useZoomControl'
 import { useCursorInteraction } from '@/hooks/useCursorInteraction'
@@ -34,17 +35,33 @@ const materialConfig: MaterialConfig = {
 
 export function Scene({ isLoaderVisible = true }: { isLoaderVisible?: boolean }) {
   // Hooks
-  const { deviceState, gyroEnabled } = useDeviceDetection()
+  const { deviceState, gyroSupported } = useDeviceDetection()
   const { targetZoom, currentZoom, initialZoom } = useZoomControl(deviceState)
   
   // Refs
   const controlsRef = useRef<any>()
   const cameraPositionRef = useRef({ x: 1, y: 20, z: 50 })
 
+  // Gyroscope permission state
+  const [gyroEnabled, setGyroEnabled] = useState(false)
+  const [showPermissionButton, setShowPermissionButton] = useState(false)
+
   // Custom hooks for interactions
   useCameraAnimation({ isLoaderVisible, controlsRef, cameraPositionRef })
   // Cursor interaction for all devices (desktop gets grab cursor, mobile/tablet still interactive)
   useCursorInteraction(deviceState.isDesktop)
+
+  // Show permission button after loader finishes on mobile/tablet with gyro support
+  const handlePermissionGranted = () => {
+    setGyroEnabled(true)
+    setShowPermissionButton(false)
+  }
+
+  // Show button when loader finishes and device supports gyro
+  if (!isLoaderVisible && gyroSupported && (deviceState.isMobile || deviceState.isTablet) && !gyroEnabled && !showPermissionButton) {
+    // Small delay to let scene load
+    setTimeout(() => setShowPermissionButton(true), 500)
+  }
 
   // Constants
   const text = 'Coming Soon'
@@ -56,13 +73,14 @@ export function Scene({ isLoaderVisible = true }: { isLoaderVisible?: boolean })
   const orbitControlsEnabled = true
 
   return (
-    <Canvas
-      shadows
-      orthographic
-      camera={{ position: [1, 20, 50], zoom: initialZoom }}
-      gl={{ preserveDrawingBuffer: true }}
-      className="w-full h-full"
-    >
+    <>
+      <Canvas
+        shadows
+        orthographic
+        camera={{ position: [1, 20, 50], zoom: initialZoom }}
+        gl={{ preserveDrawingBuffer: true }}
+        className="w-full h-full"
+      >
       {/* Smooth Zoom Controller */}
       <SmoothZoom
         controlsRef={controlsRef}
@@ -163,6 +181,15 @@ export function Scene({ isLoaderVisible = true }: { isLoaderVisible?: boolean })
         <planeGeometry args={[40, 40]} />
         <shadowMaterial transparent opacity={0.35} color={contactShadowColor} />
       </mesh>
-    </Canvas>
+      </Canvas>
+
+    {/* Gyroscope Permission Button */}
+    {showPermissionButton && (
+      <GyroPermissionButton
+        onPermissionGranted={handlePermissionGranted}
+        isMobile={deviceState.isMobile || deviceState.isTablet}
+      />
+    )}
+  </>
   )
 }

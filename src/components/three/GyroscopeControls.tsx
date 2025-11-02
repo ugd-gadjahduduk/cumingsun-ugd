@@ -48,24 +48,9 @@ export function GyroscopeControls({ enabled, controlsRef }: GyroscopeControlsPro
       }
     }
 
-    // Request permission for iOS 13+
-    const requestPermission = async () => {
-      if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
-        try {
-          const permission = await (DeviceOrientationEvent as any).requestPermission()
-          if (permission === 'granted') {
-            window.addEventListener('deviceorientation', handleOrientation, true)
-          }
-        } catch (error) {
-          console.error('Gyroscope permission denied:', error)
-        }
-      } else {
-        // Non-iOS devices
-        window.addEventListener('deviceorientation', handleOrientation, true)
-      }
-    }
-
-    requestPermission()
+    // Start listening to device orientation
+    // Permission should already be granted via the button
+    window.addEventListener('deviceorientation', handleOrientation, true)
 
     return () => {
       window.removeEventListener('deviceorientation', handleOrientation)
